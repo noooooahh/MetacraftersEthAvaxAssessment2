@@ -38,3 +38,6 @@ After this, the project will be running on your localhost. Typically at http://l
 ## Authors
 
 [@noawhaha](https://github.com/noooooahh)
+
+
+*Project Template by:* [@MetacrafterChris](https://github.com/MetacrafterChris)
