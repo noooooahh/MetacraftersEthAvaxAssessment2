@@ -5,56 +5,50 @@ pragma solidity ^0.8.9;
 
 contract Assessment {
     address payable public owner;
-    uint256 public balance;
+    uint256 public weight;
 
-    event Deposit(uint256 amount);
-    event Withdraw(uint256 amount);
+    event ChangedWeight(uint256 amount);
 
-    constructor(uint initBalance) payable {
+    constructor() payable {
         owner = payable(msg.sender);
-        balance = initBalance;
+        weight = 70;
     }
 
-    function getBalance() public view returns(uint256){
-        return balance;
+    function getWeight() public view returns(uint256){
+        return weight;
     }
 
-    function deposit(uint256 _amount) public payable {
-        uint _previousBalance = balance;
-
-        // make sure this is the owner
-        require(msg.sender == owner, "You are not the owner of this account");
+    function addWeight(uint256 _kilograms) public {
+        uint _previousWeight = weight;
 
         // perform transaction
-        balance += _amount;
+        weight += _kilograms;
 
         // assert transaction completed successfully
-        assert(balance == _previousBalance + _amount);
+        assert(weight == _previousWeight + _kilograms);
 
         // emit the event
-        emit Deposit(_amount);
+        emit ChangedWeight(_kilograms);
     }
 
-    // custom error
-    error InsufficientBalance(uint256 balance, uint256 withdrawAmount);
+     function removeWeight(uint256 _kilograms) public {
+        uint _previousWeight = weight;
 
-    function withdraw(uint256 _withdrawAmount) public {
-        require(msg.sender == owner, "You are not the owner of this account");
-        uint _previousBalance = balance;
-        if (balance < _withdrawAmount) {
-            revert InsufficientBalance({
-                balance: balance,
-                withdrawAmount: _withdrawAmount
-            });
+        // perform transaction
+        weight -= _kilograms;
+
+        // assert transaction completed successfully
+        assert(weight == _previousWeight - _kilograms);
+
+        // emit the event
+        emit ChangedWeight(_kilograms);
+    }
+
+    function checkWeight() public view returns(string memory) {
+        if (weight < 90 || weight > 110) {
+            return "Weight must be between 90kg and 110kg. Please adjust your weight!";
         }
-
-        // withdraw the given amount
-        balance -= _withdrawAmount;
-
-        // assert the balance is correct
-        assert(balance == (_previousBalance - _withdrawAmount));
-
-        // emit the event
-        emit Withdraw(_withdrawAmount);
+        return "You have the right weight!";
     }
+
 }
