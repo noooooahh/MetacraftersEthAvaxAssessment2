@@ -107,7 +107,7 @@ export default function HomePage() {
 
     return (
       <div>
-        <p>Your Weight: {weight}kg</p>
+        <p>Current Weight: {weight}kg</p>
 
         <div>
           <input
@@ -135,7 +135,7 @@ export default function HomePage() {
 
   return (
     <main className="container">
-      <header><h1>Weight Checking</h1></header>
+      <header><h1>Weight Check</h1></header>
       {initUser()}
       <style jsx>{`
         .container {
