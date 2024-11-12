@@ -4,51 +4,54 @@ pragma solidity ^0.8.9;
 //import "hardhat/console.sol";
 
 contract Assessment {
-    address payable public owner;
-    uint256 public weight;
 
-    event ChangedWeight(uint256 amount);
-
-    constructor() payable {
-        owner = payable(msg.sender);
-        weight = 70;
+    struct Item {
+        string name;
+        uint stock;
     }
 
-    function getWeight() public view returns(uint256){
-        return weight;
+    mapping(uint => Item) public items;
+
+    event StockUpdated(uint itemId, string itemName, uint newStock);
+    event ItemPurchased(uint itemId, string itemName, uint quantityPurchased);
+
+    constructor() {
+        // Initialize items
+        items[0] = Item("Apples", 50);
+        items[1] = Item("Oranges", 30);
+        items[2] = Item("Bananas", 20);
     }
 
-    function addWeight(uint256 _kilograms) public {
-        uint _previousWeight = weight;
+    function updateStock(uint _itemId, uint _newStock) public {
+        require(_itemId < 3, "Item does not exist.");
 
-        // perform transaction
-        weight += _kilograms;
+        // Check if the stock is set to a non-negative value
+        assert(_newStock >= 0);
 
-        // assert transaction completed successfully
-        assert(weight == _previousWeight + _kilograms);
-
-        // emit the event
-        emit ChangedWeight(_kilograms);
+        items[_itemId].stock = _newStock;
+        emit StockUpdated(_itemId, items[_itemId].name, _newStock);
     }
 
-     function removeWeight(uint256 _kilograms) public {
-        uint _previousWeight = weight;
+    function purchaseItem(uint _itemId, uint _quantity) public {
+        require(_itemId < 3, "Item does not exist.");
+        require(_quantity > 0, "Quantity must be greater than zero.");
 
-        // perform transaction
-        weight -= _kilograms;
+        require(items[_itemId].stock >= _quantity, "Insufficient stock for the requested quantity.");
 
-        // assert transaction completed successfully
-        assert(weight == _previousWeight - _kilograms);
+        items[_itemId].stock -= _quantity;
 
-        // emit the event
-        emit ChangedWeight(_kilograms);
-    }
-
-    function checkWeight() public view returns(string memory) {
-        if (weight < 90 || weight > 110) {
-            return "Weight must be between 90kg and 110kg. Please adjust your weight!";
+        // Revert if the stock falls below 5
+        if (items[_itemId].stock < 5) {
+            revert("Warning: Stock level is low. Restock soon!");
         }
-        return "You have the right weight!";
+
+        emit ItemPurchased(_itemId, items[_itemId].name, _quantity);
+    }
+
+    function checkStock(uint _itemId) public view returns (string memory itemName, uint stock) {
+        require(_itemId < 3, "Item does not exist.");
+        
+        return (items[_itemId].name, items[_itemId].stock);
     }
 
 }
